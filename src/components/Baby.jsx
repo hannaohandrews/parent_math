@@ -1,30 +1,34 @@
 import styled from "styled-components";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const Button = styled.button`
 	color: blue;
 `;
 
-export default function Baby() {
+function Baby({ onUpdate }) {
 	const [name, setName] = useState("");
-	const [birthdate, setBirthdate] = useState();
-	const [age, setAge] = useState(0);
+	const [birthdate, setBirthdate] = useState(new Date());
+	const [ageYears, setAgeYears] = useState(0);
+	const [ageMonths, setAgeMonths] = useState(0);
+	const [message, setMessage] = useState("");
 
 	const calculateAge = () => {
 		const today = new Date();
 		const birthdateDate = new Date(birthdate);
 
-		let age = today.getFullYear() - birthdateDate.getFullYear();
+		const ageInYears = today.getFullYear() - birthdateDate.getFullYear();
+		const ageInMonths = ageInYears * 12;
 		const monthDiff = today.getMonth() - birthdateDate.getMonth();
+		const ageTotalMonths = ageInMonths + monthDiff;
 
-		if (
-			monthDiff < 0 ||
-			(monthDiff === 0 && today.getDate() < birthdateDate.getDate())
-		) {
-			age--;
+		if (ageTotalMonths < 0) {
+			setMessage("Your birthday can't be in the future");
+		} else {
+			setAgeYears(ageInYears);
+			setAgeMonths(ageTotalMonths);
+			onUpdate(ageTotalMonths); //Calling the handler to update the state in App
 		}
-
-		setAge(age);
 	};
 
 	return (
@@ -49,13 +53,23 @@ export default function Baby() {
 						onChange={(e) => setBirthdate(e.target.value)}
 					/>
 				</label>
-				<button onClick={calculateAge}>Calculate Age</button>
+				<Button type="button" onClick={calculateAge}>
+					Calculate Age
+				</Button>
+				<hr />
+				<div>
+					<h1>Age of Baby</h1>
+					<h2>Years: {ageYears > 0 ? `${ageYears}` : "0"} </h2>
+					<h2>Months: {ageMonths > 0 ? `${ageMonths} ` : `${message}`} </h2>
+				</div>
 				<hr />
 			</form>
-
-			<div>
-				<h1>Baby Age: {age > 0 ? `${age}` : ""}</h1>
-			</div>
 		</>
 	);
 }
+
+Baby.propTypes = {
+	onUpdate: PropTypes.func.isRequired,
+};
+
+export default Baby;
