@@ -14,7 +14,10 @@ export default function CalculatedNapSchedule({ ageInMonths }) {
 
 	return (
 		<>
-			<h3>Recommended Nap Schedule</h3>
+			<h1>Recommended Nap Schedule</h1>
+			<div>
+				<h2>Age of Baby: {ageInMonths} Months </h2>
+			</div>
 			<ul>
 				<li>Awake Window: {awake_windows_hours}</li>
 				<li>Nap Duration Hours:{nap_duration_hours}</li>

@@ -9,26 +9,20 @@ const Button = styled.button`
 function Baby({ onUpdate }) {
 	const [name, setName] = useState("");
 	const [birthdate, setBirthdate] = useState(new Date());
-	const [ageYears, setAgeYears] = useState(0);
-	const [ageMonths, setAgeMonths] = useState(0);
-	const [message, setMessage] = useState("");
+	const [wakeUpTime, setWakeUpTime] = useState("00:00");
+	const [bedTime, setBedTime] = useState("00:00");
 
-	const calculateAge = () => {
+	const calculateAge = (event) => {
+		event.preventDefault();
+
 		const today = new Date();
 		const birthdateDate = new Date(birthdate);
-
 		const ageInYears = today.getFullYear() - birthdateDate.getFullYear();
 		const ageInMonths = ageInYears * 12;
 		const monthDiff = today.getMonth() - birthdateDate.getMonth();
 		const ageTotalMonths = ageInMonths + monthDiff;
 
-		if (ageTotalMonths < 0) {
-			setMessage("Your birthday can't be in the future");
-		} else {
-			setAgeYears(ageInYears);
-			setAgeMonths(ageTotalMonths);
-			onUpdate(ageTotalMonths); //Calling the handler to update the state in App
-		}
+		onUpdate(ageTotalMonths); //Calling the handler to update the state in App
 	};
 
 	return (
@@ -53,15 +47,30 @@ function Baby({ onUpdate }) {
 						onChange={(e) => setBirthdate(e.target.value)}
 					/>
 				</label>
-				<Button type="button" onClick={calculateAge}>
-					Calculate Age
+				<br />
+				<label>
+					Wake up Time
+					<input
+						name="wake_up_time"
+						type="time"
+						value={wakeUpTime}
+						onChange={(e) => setWakeUpTime(e.target.value)}
+					/>
+				</label>
+				<br />
+				<label>
+					Bedtime
+					<input
+						name="bedTime"
+						type="time"
+						value={bedTime}
+						onChange={(e) => setBedTime(e.target.value)}
+					/>
+				</label>
+				<br />
+				<Button type="submit" onClick={calculateAge}>
+					Calculate Nap Schedule
 				</Button>
-				<hr />
-				<div>
-					<h1>Age of Baby</h1>
-					<h2>Years: {ageYears > 0 ? `${ageYears}` : "0"} </h2>
-					<h2>Months: {ageMonths > 0 ? `${ageMonths} ` : `${message}`} </h2>
-				</div>
 				<hr />
 			</form>
 		</>
