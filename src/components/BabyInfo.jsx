@@ -3,9 +3,16 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 const Button = styled.button`
-	color: blue;
+	color: red;
+	margin: 10px;
+	padding: 10px 20px;
+	border: 1px solid black;
+	background-color: white;
+	cursor: pointer;
+	&:hover {
+		background-color: lightgray;
+	}
 `;
-
 export default function BabyInfo({ onUpdate }) {
 	const [name, setName] = useState("");
 	const [birthdate, setBirthdate] = useState(new Date());
@@ -20,7 +27,7 @@ export default function BabyInfo({ onUpdate }) {
 		const monthDiff = today.getMonth() - birthdateDate.getMonth();
 		const ageTotalMonths = ageInMonths + monthDiff;
 
-		onUpdate(ageTotalMonths); //Calling the handler to update the state in App
+		onUpdate(ageTotalMonths, name); //Calling the handler to update the state in App
 	};
 
 	return (

@@ -6,18 +6,31 @@ import BabySchedule from "./components/BabySchedule";
 
 function App() {
 	const [ageInMonths, setAgeInMonths] = useState(0);
+	const [name, setName] = useState("");
 
-	const updateBabyAge = (age) => {
+	const [napTimes, setNapTimes] = useState([
+		"00:00",
+		"00:00",
+		"00:00",
+		"00:00",
+	]);
+
+	const updateBabyAge = (age, name) => {
 		setAgeInMonths(age);
+		setName(name);
+	};
+
+	const updateNaps = (napTimesArray) => {
+		setNapTimes(napTimesArray);
 	};
 
 	return (
 		<>
 			<h1>Welcome to Nap Calculator</h1>
 			<BabyInfo onUpdate={updateBabyAge} />
-			<Recommendations ageInMonths={ageInMonths} />
-			<BabySchedule />
-			<PersonalNapSchedule />
+			<Recommendations ageInMonths={ageInMonths} name={name} />
+			<BabySchedule onCalculate={updateNaps} />
+			<PersonalNapSchedule napTimes={napTimes} />
 		</>
 	);
 }

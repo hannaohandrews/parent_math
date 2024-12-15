@@ -4,34 +4,59 @@ import styled from "styled-components";
 
 const Button = styled.button`
 	color: red;
+	margin: 10px;
+	padding: 10px 20px;
+	border: 1px solid black;
+	background-color: white;
+	cursor: pointer;
+	&:hover {
+		background-color: lightgray;
+	}
 `;
 
-export default function BabySchedule() {
+export default function BabySchedule({ onCalculate }) {
 	const [wakeUpTime, setWakeUpTime] = useState("00:00");
 	const [bedTime, setBedTime] = useState("00:00");
-	const [awakeWindow, setAwakeWindow] = useState(0);
 
+	const [awakeWindow, setAwakeWindow] = useState(0);
 	const [napDuration, setNapDuration] = useState(0);
 	const [numberOfNaps, setNumberOfNaps] = useState(0);
 
-	const [firstNap, setFirstNap] = useState("00:00");
+	const [napTimes, setNapTimes] = useState([]);
 
-	const handleClick = (e) => {
+	const calculateNap = (startTime, awakeWindow, napDuration) => {
+		// Convert wakeUpTime string to Date object
+		const [hours, minutes] = startTime.split(":");
+		const date = new Date();
+		date.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+
+		// Add awakeWindow in hours and napDuration in minutes
+		date.setHours(date.getHours() + Math.floor(awakeWindow)); // add full hours
+		date.setMinutes(
+			date.getMinutes() + (awakeWindow % 1) * 60 + napDuration * 60
+		); // convert napDuration to minutes
+
+		// Convert back to a time string
+		return date.toTimeString().slice(0, 5); // Extracts the time in HH:MM format
+	};
+	const handleCalculate = (e) => {
 		e.preventDefault();
 
-		//convert wakeUpTime string to Date object
-		const [hours, minutes] = wakeUpTime.split(":");
-		const date = new Date();
-		date.setHours(parseInt(hours, 10));
-		date.setMinutes(parseInt(minutes, 10));
+		let lastNapTime = wakeUpTime;
+		const calculatedNapTimes = [];
 
-		// add awakeWindows
-		date.setHours(date.getHours() + parseInt(awakeWindow, 10));
+		for (let i = 0; i < numberOfNaps; i++) {
+			console.log(`Calculating nap ${i + 1} starting from: ${lastNapTime}`);
 
-		// convert back to a time string
-		const newTime = date.toTimeString().slice(0, 5);
+			const napTime = calculateNap(lastNapTime, awakeWindow, napDuration);
+			console.log(`Nap ${i + 1} time: ${napTime}`);
 
-		setFirstNap(newTime);
+			calculatedNapTimes.push(napTime);
+			lastNapTime = napTime; // Update the last nap time for the next iteration
+		}
+
+		setNapTimes(calculatedNapTimes);
+		onCalculate(calculatedNapTimes);
 	};
 
 	return (
@@ -66,7 +91,7 @@ export default function BabySchedule() {
 						min="0"
 						max="60"
 						value={awakeWindow}
-						onChange={(e) => setAwakeWindow(e.target.value)}
+						onChange={(e) => setAwakeWindow(parseFloat(e.target.value)) || 0}
 					/>
 					Hrs
 				</label>
@@ -77,7 +102,7 @@ export default function BabySchedule() {
 						name="nap duration"
 						type="number"
 						min="0"
-						max="60"
+						max="12"
 						value={napDuration}
 						onChange={(e) => setNapDuration(e.target.value)}
 					/>
@@ -96,13 +121,11 @@ export default function BabySchedule() {
 					/>
 				</label>
 				<br />
-				<Button type="submit" onClick={handleClick}>
+				<Button type="button" onClick={handleCalculate}>
 					Calculate Nap Schedule
 				</Button>
 				<hr />
 			</form>
-			<h1> Personalized Nap Schedule</h1>
-			<div>FIRST NAP {firstNap}</div>
 		</>
 	);
 }
