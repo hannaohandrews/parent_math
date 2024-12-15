@@ -6,11 +6,9 @@ const Button = styled.button`
 	color: blue;
 `;
 
-function Baby({ onUpdate }) {
+export default function BabyInfo({ onUpdate }) {
 	const [name, setName] = useState("");
 	const [birthdate, setBirthdate] = useState(new Date());
-	const [wakeUpTime, setWakeUpTime] = useState("00:00");
-	const [bedTime, setBedTime] = useState("00:00");
 
 	const calculateAge = (event) => {
 		event.preventDefault();
@@ -48,28 +46,9 @@ function Baby({ onUpdate }) {
 					/>
 				</label>
 				<br />
-				<label>
-					Wake up Time
-					<input
-						name="wake_up_time"
-						type="time"
-						value={wakeUpTime}
-						onChange={(e) => setWakeUpTime(e.target.value)}
-					/>
-				</label>
-				<br />
-				<label>
-					Bedtime
-					<input
-						name="bedTime"
-						type="time"
-						value={bedTime}
-						onChange={(e) => setBedTime(e.target.value)}
-					/>
-				</label>
-				<br />
+
 				<Button type="submit" onClick={calculateAge}>
-					Calculate Nap Schedule
+					Show recommended schedule
 				</Button>
 				<hr />
 			</form>
@@ -77,8 +56,6 @@ function Baby({ onUpdate }) {
 	);
 }
 
-Baby.propTypes = {
+BabyInfo.propTypes = {
 	onUpdate: PropTypes.func.isRequired,
 };
-
-export default Baby;

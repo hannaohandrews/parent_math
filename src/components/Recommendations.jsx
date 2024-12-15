@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import NapScheduleData from "./NapScheduleData";
 
-export default function CalculatedNapSchedule({ ageInMonths }) {
+export default function Recommendations({ ageInMonths }) {
 	const napSchedule = NapScheduleData.find((data) =>
 		data.age.includes(ageInMonths)
 	);
@@ -14,7 +14,7 @@ export default function CalculatedNapSchedule({ ageInMonths }) {
 
 	return (
 		<>
-			<h1>Recommended Nap Schedule</h1>
+			<h1>Recommendations</h1>
 			<div>
 				<h2>Age of Baby: {ageInMonths} Months </h2>
 			</div>
@@ -23,10 +23,11 @@ export default function CalculatedNapSchedule({ ageInMonths }) {
 				<li>Nap Duration Hours:{nap_duration_hours}</li>
 				<li>Number of Naps per day: {number_of_naps_per_day}</li>
 			</ul>
+			<hr />
 		</>
 	);
 }
 
-CalculatedNapSchedule.propTypes = {
+Recommendations.propTypes = {
 	ageInMonths: PropTypes.number.isRequired,
 };
