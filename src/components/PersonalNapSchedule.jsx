@@ -12,7 +12,6 @@ const NapItem = styled.div`
 `;
 
 export default function PersonalNapSchedule({ napTimes }) {
-	console.log("PersonalNapSchedule", napTimes);
 	return (
 		<>
 			<NapContainer>

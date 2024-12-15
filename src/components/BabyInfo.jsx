@@ -10,7 +10,7 @@ const Button = styled.button`
 	background-color: white;
 	cursor: pointer;
 	&:hover {
-		background-color: lightgray;
+		background-color: yellow;
 	}
 `;
 export default function BabyInfo({ onUpdate }) {
