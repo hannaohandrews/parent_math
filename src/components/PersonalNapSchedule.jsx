@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-// Optional styled components for better structure and spacing
 const NapContainer = styled.div`
 	margin-top: 20px;
 `;

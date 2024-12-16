@@ -1,6 +1,9 @@
 import { useState } from "react";
-
 import styled from "styled-components";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(duration);
 
 const Button = styled.button`
 	color: red;
@@ -10,7 +13,7 @@ const Button = styled.button`
 	background-color: white;
 	cursor: pointer;
 	&:hover {
-		background-color: lightgray;
+		background-color: yellow;
 	}
 `;
 
@@ -25,20 +28,21 @@ export default function BabySchedule({ onCalculate }) {
 	const [napTimes, setNapTimes] = useState([]);
 
 	const calculateNap = (startTime, awakeWindow, napDuration) => {
-		// Convert wakeUpTime string to Date object
 		const [hours, minutes] = startTime.split(":");
-		const date = new Date();
-		date.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+		const startTimeParsed = dayjs()
+			.hour(parseInt(hours, 10))
+			.minute(parseInt(minutes, 10));
 
-		// Add awakeWindow in hours and napDuration in minutes
-		date.setHours(date.getHours() + Math.floor(awakeWindow)); // add full hours
-		date.setMinutes(
-			date.getMinutes() + (awakeWindow % 1) * 60 + napDuration * 60
-		); // convert napDuration to minutes
+		const awakeWindowDurationInHours = dayjs.duration(awakeWindow, "hours");
+		const napDurationInHours = dayjs.duration(napDuration, "hours");
 
-		// Convert back to a time string
-		return date.toTimeString().slice(0, 5); // Extracts the time in HH:MM format
+		const napTime = startTimeParsed
+			.add(awakeWindowDurationInHours)
+			.add(napDurationInHours);
+
+		return napTime.format("hh:mm A");
 	};
+
 	const handleCalculate = (e) => {
 		e.preventDefault();
 
@@ -46,10 +50,7 @@ export default function BabySchedule({ onCalculate }) {
 		const calculatedNapTimes = [];
 
 		for (let i = 0; i < numberOfNaps; i++) {
-			console.log(`Calculating nap ${i + 1} starting from: ${lastNapTime}`);
-
 			const napTime = calculateNap(lastNapTime, awakeWindow, napDuration);
-			console.log(`Nap ${i + 1} time: ${napTime}`);
 
 			calculatedNapTimes.push(napTime);
 			lastNapTime = napTime; // Update the last nap time for the next iteration

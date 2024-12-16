@@ -13,7 +13,6 @@ export default function Recommendations(props) {
 		data.age.includes(ageInMonths)
 	);
 
-	console.log(name);
 	const {
 		awake_windows_hours = "N/A",
 		nap_duration_hours = "N/A",
