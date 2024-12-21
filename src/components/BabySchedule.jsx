@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import PropTypes from "prop-types";
 
 dayjs.extend(duration);
 
@@ -17,9 +18,9 @@ const Button = styled.button`
 	}
 `;
 
-export default function BabySchedule({ onCalculate }) {
+export default function BabySchedule({ onCalculate, onBedTimeChange }) {
 	const [wakeUpTime, setWakeUpTime] = useState("00:00");
-	const [bedTime, setBedTime] = useState("00:00");
+	const [localBedTime, setlocalBedTime] = useState("00:00");
 
 	const [awakeWindow, setAwakeWindow] = useState(0);
 	const [napDuration, setNapDuration] = useState(0);
@@ -31,7 +32,8 @@ export default function BabySchedule({ onCalculate }) {
 		const [hours, minutes] = startTime.split(":");
 		const startTimeParsed = dayjs()
 			.hour(parseInt(hours, 10))
-			.minute(parseInt(minutes, 10));
+			.minute(parseInt(minutes, 10))
+			.second(0);
 
 		const awakeWindowDurationInHours = dayjs.duration(awakeWindow, "hours");
 		const napDurationInHours = dayjs.duration(napDuration, "hours");
@@ -40,7 +42,7 @@ export default function BabySchedule({ onCalculate }) {
 			.add(awakeWindowDurationInHours)
 			.add(napDurationInHours);
 
-		return napTime.format("hh:mm A");
+		return napTime.format("HH:mm ");
 	};
 
 	const handleCalculate = (e) => {
@@ -52,12 +54,21 @@ export default function BabySchedule({ onCalculate }) {
 		for (let i = 0; i < numberOfNaps; i++) {
 			const napTime = calculateNap(lastNapTime, awakeWindow, napDuration);
 
-			calculatedNapTimes.push(napTime);
+			const napTimeFormat = napTime;
+
+			calculatedNapTimes.push(napTimeFormat);
+
 			lastNapTime = napTime; // Update the last nap time for the next iteration
 		}
 
 		setNapTimes(calculatedNapTimes);
 		onCalculate(calculatedNapTimes);
+	};
+
+	const handleBedTimeChange = (e) => {
+		const newBedTime = e.target.value;
+		setlocalBedTime(newBedTime);
+		onBedTimeChange(newBedTime);
 	};
 
 	return (
@@ -79,8 +90,8 @@ export default function BabySchedule({ onCalculate }) {
 					<input
 						name="bedTime"
 						type="time"
-						value={bedTime}
-						onChange={(e) => setBedTime(e.target.value)}
+						value={localBedTime}
+						onChange={handleBedTimeChange}
 					/>
 				</label>
 				<br />
@@ -130,3 +141,8 @@ export default function BabySchedule({ onCalculate }) {
 		</>
 	);
 }
+
+BabySchedule.propTypes = {
+	onCalculate: PropTypes.func.isRequired,
+	onBedTimeChange: PropTypes.func.isRequired,
+};
