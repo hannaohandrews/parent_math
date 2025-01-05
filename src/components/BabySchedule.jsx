@@ -45,6 +45,20 @@ export default function BabySchedule({ onCalculate, onBedTimeChange }) {
 		return napTime.format("HH:mm ");
 	};
 
+	const calculateFirstNap = (startTime, awakeWindow) => {
+		const [hours, minutes] = startTime.split(":");
+		const startTimeParsed = dayjs()
+			.hour(parseInt(hours, 10))
+			.minute(parseInt(minutes, 10))
+			.second(0);
+
+		const awakeWindowDurationInHours = dayjs.duration(awakeWindow, "hours");
+
+		const napTime = startTimeParsed.add(awakeWindowDurationInHours);
+
+		return napTime.format("HH:mm ");
+	};
+
 	const handleCalculate = (e) => {
 		e.preventDefault();
 
@@ -52,7 +66,13 @@ export default function BabySchedule({ onCalculate, onBedTimeChange }) {
 		const calculatedNapTimes = [];
 
 		for (let i = 0; i < numberOfNaps; i++) {
-			const napTime = calculateNap(lastNapTime, awakeWindow, napDuration);
+			let napTime;
+			if (i === 0) {
+				napTime = calculateFirstNap(lastNapTime, awakeWindow);
+				console.log(napTime, "firstNap");
+			} else {
+				napTime = calculateNap(lastNapTime, awakeWindow, napDuration);
+			}
 
 			const napTimeFormat = napTime;
 
