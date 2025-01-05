@@ -4,14 +4,20 @@ import dayjs from "dayjs";
 
 const NapContainer = styled.div`
 	margin-top: 20px;
+	display: flex;
+	flex-direction: row;
 `;
 
 const NapItem = styled.div`
 	font-size: 18px;
-	margin: 10px 0;
+	margin: 20px;
 `;
 
-export default function PersonalNapSchedule({ napTimes, bedTime }) {
+export default function PersonalNapSchedule({
+	napTimes,
+	bedTime,
+	endOfNapTimes,
+}) {
 	// bedTime
 	const [hours, minutes] = bedTime.split(":");
 	const bedTimeParsed = dayjs()
@@ -30,8 +36,18 @@ export default function PersonalNapSchedule({ napTimes, bedTime }) {
 		return napTimeParsed.format("h:mm A");
 	});
 
-	//lastNap
-	const lastNap = napTimes[napTimes.length - 1];
+	const newEndOfNapTimes = endOfNapTimes.map((endOfNapTime) => {
+		const [endNapTimeHours, endNapTimeMinutes] = endOfNapTime.split(":");
+
+		const endNapTimeParsed = dayjs()
+			.hour(parseInt(endNapTimeHours, 10))
+			.minute(parseInt(endNapTimeMinutes, 10));
+
+		return endNapTimeParsed.format("h:mm A");
+	});
+
+	//lastNapEnding
+	const lastNap = endOfNapTimes[endOfNapTimes.length - 1];
 	const [lastNapHours, lastNapMinutes] = lastNap.split(":");
 
 	const lastNapParsed = dayjs()
@@ -43,25 +59,42 @@ export default function PersonalNapSchedule({ napTimes, bedTime }) {
 	const timeDifferenceInHours = Math.floor(timeDifferenceDuration.asHours());
 
 	return (
-		<NapContainer>
+		<>
 			<h1>Personalized Nap Schedule</h1>
-			{newNapTimes.map((napTime, index) => (
-				<NapItem key={index}>
-					Nap Number {index + 1}: {napTime}
+			<NapContainer>
+				<NapItem>
+					{newNapTimes.map((napTime, index) => (
+						<div key={index}>
+							Start Nap {index + 1}: {napTime}
+						</div>
+					))}
 				</NapItem>
-			))}
-			<h3>Bedtime: {bedTimeLocal}</h3>
+
+				<NapItem>
+					{newEndOfNapTimes.map((napTime, index) => (
+						<div key={index}>
+							End Nap {index + 1}: {napTime}
+						</div>
+					))}
+				</NapItem>
+			</NapContainer>
+
+			<h2>Summary</h2>
+
 			<div>
+				<p>Total Nap Time: {newNapTimes.length}</p>
+				<p>Bedtime: {bedTimeLocal}</p>
 				<p>
-					Time difference between last nap and bedtime:{" "}
+					Time difference between end of last nap and bedtime:{" "}
 					{timeDifferenceInHours < 0 ? 0 : timeDifferenceInHours} hrs
 				</p>
 			</div>
-		</NapContainer>
+		</>
 	);
 }
 
 PersonalNapSchedule.propTypes = {
 	napTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
 	bedTime: PropTypes.string.isRequired,
+	endOfNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

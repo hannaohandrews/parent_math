@@ -14,6 +14,13 @@ function App() {
 		"00:00",
 		"00:00",
 	]);
+
+	const [endOfNapTimes, setEndOfNapTimes] = useState([
+		"00:00",
+		"00:00",
+		"00:00",
+		"00:00",
+	]);
 	const [bedTime, setBedTime] = useState("00:00");
 
 	const updateBabyAge = (age, name) => {
@@ -29,13 +36,25 @@ function App() {
 		setBedTime(bedTime);
 	};
 
+	const updateEndOfNapTimes = (endOfNapTimesArray) => {
+		setEndOfNapTimes(endOfNapTimesArray);
+	};
+
 	return (
 		<>
 			<h1>Welcome to Nap Calculator</h1>
 			<BabyInfo onUpdate={updateBabyAge} />
 			<Recommendations ageInMonths={ageInMonths} name={name} />
-			<BabySchedule onCalculate={updateNaps} onBedTimeChange={updateBedTime} />
-			<PersonalNapSchedule napTimes={napTimes} bedTime={bedTime} />
+			<BabySchedule
+				onCalculateNap={updateNaps}
+				onCalculateEndOfNap={updateEndOfNapTimes}
+				onBedTimeChange={updateBedTime}
+			/>
+			<PersonalNapSchedule
+				napTimes={napTimes}
+				bedTime={bedTime}
+				endOfNapTimes={endOfNapTimes}
+			/>
 		</>
 	);
 }

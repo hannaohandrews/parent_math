@@ -18,7 +18,11 @@ const Button = styled.button`
 	}
 `;
 
-export default function BabySchedule({ onCalculate, onBedTimeChange }) {
+export default function BabySchedule({
+	onCalculateNap,
+	onCalculateEndOfNap,
+	onBedTimeChange,
+}) {
 	const [wakeUpTime, setWakeUpTime] = useState("00:00");
 	const [localBedTime, setlocalBedTime] = useState("00:00");
 
@@ -27,6 +31,7 @@ export default function BabySchedule({ onCalculate, onBedTimeChange }) {
 	const [numberOfNaps, setNumberOfNaps] = useState(0);
 
 	const [napTimes, setNapTimes] = useState([]);
+	const [napEndTimes, setNapEndTimes] = useState([]);
 
 	const calculateNap = (startTime, awakeWindow, napDuration) => {
 		const [hours, minutes] = startTime.split(":");
@@ -59,30 +64,49 @@ export default function BabySchedule({ onCalculate, onBedTimeChange }) {
 		return napTime.format("HH:mm ");
 	};
 
+	const calculateEndOfNap = (napTime, napDuration) => {
+		const [hours, minutes] = napTime.split(":");
+		const startTimeParsed = dayjs()
+			.hour(parseInt(hours, 10))
+			.minute(parseInt(minutes, 10))
+			.second(0);
+
+		const napDurationInHours = dayjs.duration(napDuration, "hours");
+
+		const endOfNapTime = startTimeParsed.add(napDurationInHours);
+
+		return endOfNapTime.format("HH:mm ");
+	};
+
 	const handleCalculate = (e) => {
 		e.preventDefault();
 
 		let lastNapTime = wakeUpTime;
 		const calculatedNapTimes = [];
+		const calculatedEndOfNapTimes = [];
 
 		for (let i = 0; i < numberOfNaps; i++) {
 			let napTime;
+			let endOfNapTime;
 			if (i === 0) {
 				napTime = calculateFirstNap(lastNapTime, awakeWindow);
-				console.log(napTime, "firstNap");
+				endOfNapTime = calculateEndOfNap(napTime, napDuration);
 			} else {
 				napTime = calculateNap(lastNapTime, awakeWindow, napDuration);
+				endOfNapTime = calculateEndOfNap(napTime, napDuration);
 			}
 
-			const napTimeFormat = napTime;
-
-			calculatedNapTimes.push(napTimeFormat);
+			calculatedEndOfNapTimes.push(endOfNapTime);
+			calculatedNapTimes.push(napTime);
 
 			lastNapTime = napTime; // Update the last nap time for the next iteration
 		}
 
+		setNapEndTimes(calculatedEndOfNapTimes);
+		onCalculateEndOfNap(calculatedEndOfNapTimes);
+
 		setNapTimes(calculatedNapTimes);
-		onCalculate(calculatedNapTimes);
+		onCalculateNap(calculatedNapTimes);
 	};
 
 	const handleBedTimeChange = (e) => {
@@ -163,6 +187,7 @@ export default function BabySchedule({ onCalculate, onBedTimeChange }) {
 }
 
 BabySchedule.propTypes = {
-	onCalculate: PropTypes.func.isRequired,
+	onCalculateNap: PropTypes.func.isRequired,
+	onCalculateEndOfNap: PropTypes.func.isRequired,
 	onBedTimeChange: PropTypes.func.isRequired,
 };
