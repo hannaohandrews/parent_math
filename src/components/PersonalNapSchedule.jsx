@@ -89,6 +89,7 @@ export default function PersonalNapSchedule({
 					{timeDifferenceInHours < 0 ? 0 : timeDifferenceInHours} hrs
 				</p>
 			</div>
+			<button>SAVE SCHEDULE</button>
 		</>
 	);
 }
