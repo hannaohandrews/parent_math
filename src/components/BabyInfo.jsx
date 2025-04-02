@@ -35,7 +35,7 @@ export default function BabyInfo({ onUpdate }) {
 			<h1>Baby Info</h1>
 			<form>
 				<label>
-					Name:{" "}
+					Name:
 					<input
 						name="name"
 						value={name}
@@ -44,7 +44,7 @@ export default function BabyInfo({ onUpdate }) {
 				</label>
 				<br />
 				<label>
-					Date of Birth:{" "}
+					Date of Birth:
 					<input
 						name="birthdate"
 						type="date"

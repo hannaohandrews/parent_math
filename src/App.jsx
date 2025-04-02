@@ -3,6 +3,7 @@ import BabyInfo from "./components/BabyInfo";
 import Recommendations from "./components/Recommendations";
 import PersonalNapSchedule from "./components/PersonalNapSchedule";
 import BabySchedule from "./components/BabySchedule";
+import Summary from "./components/Summary";
 
 function App() {
 	const [ageInMonths, setAgeInMonths] = useState(0);
@@ -51,6 +52,11 @@ function App() {
 				onBedTimeChange={updateBedTime}
 			/>
 			<PersonalNapSchedule
+				napTimes={napTimes}
+				bedTime={bedTime}
+				endOfNapTimes={endOfNapTimes}
+			/>
+			<Summary
 				napTimes={napTimes}
 				bedTime={bedTime}
 				endOfNapTimes={endOfNapTimes}

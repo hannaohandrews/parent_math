@@ -28,7 +28,7 @@ export default function Recommendations(props) {
 			</div>
 			<ul>
 				<li>Awake Window: {awake_windows_hours}</li>
-				<li>Nap Duration Hours:{nap_duration_hours}</li>
+				<li>Nap Duration Hours: {nap_duration_hours}</li>
 				<li>Number of Naps per day: {number_of_naps_per_day}</li>
 			</ul>
 			<hr />

@@ -13,11 +13,7 @@ const NapItem = styled.div`
 	padding: 10px;
 `;
 
-export default function PersonalNapSchedule({
-	napTimes,
-	bedTime,
-	endOfNapTimes,
-}) {
+export default function Summary({ napTimes, bedTime, endOfNapTimes }) {
 	// bedTime
 	const [hours, minutes] = bedTime.split(":");
 	const bedTimeParsed = dayjs()
@@ -60,7 +56,7 @@ export default function PersonalNapSchedule({
 
 	return (
 		<>
-			<h1>Personalized Nap Schedule</h1>
+			<h1>Final Nap Schedule</h1>
 			<div>
 				<NapContainer>
 					<table>
@@ -92,16 +88,25 @@ export default function PersonalNapSchedule({
 						</td>
 					</table>
 				</NapContainer>
-				<button>Do you have an appointment? </button>
-				<button>Save</button>
+				<button>EDIT </button>
 			</div>
 
-			<hr />
+			<h2>Summary</h2>
+			<div>
+				<p>Total Nap Time: {newNapTimes.length}</p>
+				<p>Bedtime: {bedTimeLocal}</p>
+				<p>
+					Time difference between end of last nap and bedtime:{" "}
+					{timeDifferenceInHours < 0 ? 0 : timeDifferenceInHours} hrs
+				</p>
+			</div>
+			<button>Early Bedtime Option</button>
+			<button>Later Bedtime Option</button>
 		</>
 	);
 }
 
-PersonalNapSchedule.propTypes = {
+Summary.propTypes = {
 	napTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
 	bedTime: PropTypes.string.isRequired,
 	endOfNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
