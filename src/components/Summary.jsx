@@ -60,32 +60,28 @@ export default function Summary({ napTimes, bedTime, endOfNapTimes }) {
 			<div>
 				<NapContainer>
 					<table>
-						<tr>
-							<th>#</th>
-							<th>Start</th>
-							<th>End</th>
-						</tr>
-						<td>
-							<NapItem>
-								{newNapTimes.map((napTime, index) => (
-									<div key={index}>{index + 1}</div>
-								))}
-							</NapItem>
-						</td>
-						<td>
-							<NapItem>
-								{newNapTimes.map((napTime, index) => (
-									<div key={index}>{napTime}</div>
-								))}
-							</NapItem>
-						</td>
-						<td>
-							<NapItem>
-								{newEndOfNapTimes.map((napTime, index) => (
-									<div key={index}>{napTime}</div>
-								))}
-							</NapItem>
-						</td>
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Start</th>
+								<th>End</th>
+							</tr>
+						</thead>
+						<tbody>
+							{newNapTimes.map((napTime, index) => (
+								<tr key={index}>
+									<td>
+										<NapItem>{index + 1}</NapItem>
+									</td>
+									<td>
+										<NapItem>{napTime}</NapItem>
+									</td>
+									<td>
+										<NapItem>{newEndOfNapTimes[index]}</NapItem>
+									</td>
+								</tr>
+							))}
+						</tbody>
 					</table>
 				</NapContainer>
 				<button>EDIT </button>
