@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -27,6 +27,9 @@ export default function BabySchedule({
 	const [localBedTime, setlocalBedTime] = useState("00:00");
 
 	const [awakeWindow, setAwakeWindow] = useState(0);
+	const [awakeHour, setAwakeHour] = useState(0);
+	const [awakeMin, setAwakeMin] = useState(0);
+
 	const [napDuration, setNapDuration] = useState(0);
 	const [numberOfNaps, setNumberOfNaps] = useState(0);
 
@@ -34,6 +37,7 @@ export default function BabySchedule({
 	const [napEndTimes, setNapEndTimes] = useState([]);
 
 	const calculateNap = (startTime, awakeWindow, napDuration) => {
+		console.log(awakeWindow);
 		const [hours, minutes] = startTime.split(":");
 		const startTimeParsed = dayjs()
 			.hour(parseInt(hours, 10))
@@ -51,6 +55,7 @@ export default function BabySchedule({
 	};
 
 	const calculateFirstNap = (startTime, awakeWindow) => {
+		console.log(awakeWindow, "awakeWindow");
 		const [hours, minutes] = startTime.split(":");
 		const startTimeParsed = dayjs()
 			.hour(parseInt(hours, 10))
@@ -78,36 +83,50 @@ export default function BabySchedule({
 		return endOfNapTime.format("HH:mm ");
 	};
 
-	const handleCalculate = (e) => {
-		e.preventDefault();
+	const handleCalculate = useCallback(
+		(e) => {
+			e.preventDefault();
+			const awakeMinInHours = parseFloat(awakeMin / 60).toPrecision(3);
+			const windowInHours = Number(awakeHour) + Number(awakeMinInHours);
+			console.log(windowInHours, "windowInHours");
 
-		let lastNapTime = wakeUpTime;
-		const calculatedNapTimes = [];
-		const calculatedEndOfNapTimes = [];
+			let lastNapTime = wakeUpTime;
+			const calculatedNapTimes = [];
+			const calculatedEndOfNapTimes = [];
 
-		for (let i = 0; i < numberOfNaps; i++) {
-			let napTime;
-			let endOfNapTime;
-			if (i === 0) {
-				napTime = calculateFirstNap(lastNapTime, awakeWindow);
-				endOfNapTime = calculateEndOfNap(napTime, napDuration);
-			} else {
-				napTime = calculateNap(lastNapTime, awakeWindow, napDuration);
-				endOfNapTime = calculateEndOfNap(napTime, napDuration);
+			for (let i = 0; i < numberOfNaps; i++) {
+				let napTime;
+				let endOfNapTime;
+				if (i === 0) {
+					napTime = calculateFirstNap(lastNapTime, windowInHours);
+					endOfNapTime = calculateEndOfNap(napTime, napDuration);
+				} else {
+					napTime = calculateNap(lastNapTime, windowInHours, napDuration);
+					endOfNapTime = calculateEndOfNap(napTime, napDuration);
+				}
+
+				calculatedEndOfNapTimes.push(endOfNapTime);
+				calculatedNapTimes.push(napTime);
+
+				lastNapTime = napTime; // Update the last nap time for the next iteration
 			}
 
-			calculatedEndOfNapTimes.push(endOfNapTime);
-			calculatedNapTimes.push(napTime);
+			setNapEndTimes(calculatedEndOfNapTimes);
+			onCalculateEndOfNap(calculatedEndOfNapTimes);
 
-			lastNapTime = napTime; // Update the last nap time for the next iteration
-		}
-
-		setNapEndTimes(calculatedEndOfNapTimes);
-		onCalculateEndOfNap(calculatedEndOfNapTimes);
-
-		setNapTimes(calculatedNapTimes);
-		onCalculateNap(calculatedNapTimes);
-	};
+			setNapTimes(calculatedNapTimes);
+			onCalculateNap(calculatedNapTimes);
+		},
+		[
+			awakeMin,
+			awakeHour,
+			wakeUpTime,
+			onCalculateEndOfNap,
+			onCalculateNap,
+			numberOfNaps,
+			napDuration,
+		]
+	);
 
 	const handleBedTimeChange = (e) => {
 		const newBedTime = e.target.value;
@@ -142,14 +161,23 @@ export default function BabySchedule({
 				<label>
 					Awake Window:
 					<input
-						name="awake window"
+						name="awake hour"
+						type="number"
+						min="0"
+						max="12"
+						value={awakeHour}
+						onChange={(e) => setAwakeHour(Number(e.target.value))}
+					/>
+					hrs
+					<input
+						name="awake min"
 						type="number"
 						min="0"
 						max="60"
-						value={awakeWindow}
-						onChange={(e) => setAwakeWindow(parseFloat(e.target.value)) || 0}
+						value={awakeMin}
+						onChange={(e) => setAwakeMin(Number(e.target.value))}
 					/>
-					Hrs
+					min
 				</label>
 				<br />
 				<label>
@@ -160,7 +188,7 @@ export default function BabySchedule({
 						min="0"
 						max="12"
 						value={napDuration}
-						onChange={(e) => setNapDuration(e.target.value)}
+						onChange={(e) => setNapDuration(Number(e.target.value))}
 					/>
 				</label>
 				Hrs
@@ -173,7 +201,7 @@ export default function BabySchedule({
 						min="0"
 						max="5"
 						value={numberOfNaps}
-						onChange={(e) => setNumberOfNaps(e.target.value)}
+						onChange={(e) => setNumberOfNaps(Number(e.target.value))}
 					/>
 				</label>
 				<br />

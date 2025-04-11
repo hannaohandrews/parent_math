@@ -92,10 +92,12 @@ export default function PersonalNapSchedule({
 						</td>
 					</table>
 				</NapContainer>
-				<button>Do you have an appointment? </button>
-				<button>Save</button>
+				<button> Nap time conflict – Click to Adjust </button>
+				<br />
+				<button> Edit</button>
+				<br />
+				<button> Save</button>
 			</div>
-
 			<hr />
 		</>
 	);
