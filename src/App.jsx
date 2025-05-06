@@ -4,7 +4,6 @@ import Recommendations from "./components/Recommendations";
 import PersonalNapSchedule from "./components/PersonalNapSchedule";
 import BabySchedule from "./components/BabySchedule";
 import Summary from "./components/Summary";
-import NapTimeConflict from "./components/NapTimeConflict";
 
 function App() {
 	const [ageInMonths, setAgeInMonths] = useState(0);
@@ -58,7 +57,7 @@ function App() {
 				bedTime={bedTime}
 				endOfNapTimes={endOfNapTimes}
 			/>
-			<NapTimeConflict />
+
 			<Summary
 				napTimes={napTimes}
 				bedTime={bedTime}

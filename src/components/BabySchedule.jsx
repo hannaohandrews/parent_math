@@ -23,8 +23,8 @@ export default function BabySchedule({
 	onCalculateEndOfNap,
 	onBedTimeChange,
 }) {
-	const [wakeUpTime, setWakeUpTime] = useState("00:00");
-	const [localBedTime, setlocalBedTime] = useState("00:00");
+	const [wakeUpTime, setWakeUpTime] = useState("07:00");
+	const [localBedTime, setlocalBedTime] = useState("19:00");
 
 	const [awakeWindow, setAwakeWindow] = useState(0);
 	const [awakeHour, setAwakeHour] = useState(0);
@@ -37,7 +37,6 @@ export default function BabySchedule({
 	const [napEndTimes, setNapEndTimes] = useState([]);
 
 	const calculateNap = (startTime, awakeWindow, napDuration) => {
-		console.log(awakeWindow);
 		const [hours, minutes] = startTime.split(":");
 		const startTimeParsed = dayjs()
 			.hour(parseInt(hours, 10))
@@ -55,7 +54,6 @@ export default function BabySchedule({
 	};
 
 	const calculateFirstNap = (startTime, awakeWindow) => {
-		console.log(awakeWindow, "awakeWindow");
 		const [hours, minutes] = startTime.split(":");
 		const startTimeParsed = dayjs()
 			.hour(parseInt(hours, 10))
@@ -88,7 +86,6 @@ export default function BabySchedule({
 			e.preventDefault();
 			const awakeMinInHours = parseFloat(awakeMin / 60).toPrecision(3);
 			const windowInHours = Number(awakeHour) + Number(awakeMinInHours);
-			console.log(windowInHours, "windowInHours");
 
 			let lastNapTime = wakeUpTime;
 			const calculatedNapTimes = [];

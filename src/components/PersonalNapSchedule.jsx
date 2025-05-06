@@ -1,3 +1,4 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import dayjs from "dayjs";
@@ -18,6 +19,20 @@ export default function PersonalNapSchedule({
 	bedTime,
 	endOfNapTimes,
 }) {
+	// Function parseTimeToDayjs
+
+	function parseTimeToDaysjs(totalMinutes) {
+		const hours = Math.floor(totalMinutes / 60);
+		const minutes = totalMinutes % 60;
+		const finalTime = dayjs()
+			.hour(hours)
+			.minute(minutes)
+			.second(0)
+			.millisecond(0);
+
+		return finalTime.format("hh:mm A");
+	}
+
 	// bedTime
 	const [hours, minutes] = bedTime.split(":");
 	const bedTimeParsed = dayjs()
@@ -58,17 +73,85 @@ export default function PersonalNapSchedule({
 	const timeDifferenceDuration = dayjs.duration(timeDifferenceInMS);
 	const timeDifferenceInHours = Math.floor(timeDifferenceDuration.asHours());
 
+	//Conflict Times
+	const [conflictStartTime, setConflictStartTime] = useState("00:00");
+	const [conflictTimeDuration, setConflictTimeDuration] = useState(0);
+
+	const setConflictTime = (data) => {
+		setConflictStartTime(data);
+	};
+
+	const setConflictDuration = (data) => {
+		setConflictTimeDuration(data);
+	};
+
+	console.log(conflictStartTime);
+	console.log(conflictTimeDuration);
+
+	// Recalculate New sleeping times
+	const handleRecalculate = (naps, appointmentTime) => {
+		console.log("naps", naps);
+		function toMinutes(timeStr) {
+			const [hours, minutes] = timeStr.split(":").map(Number);
+			return hours * 60 + minutes;
+		}
+
+		const appointmentMinutes = toMinutes(appointmentTime);
+		console.log(appointmentMinutes, "appointmentMinutes");
+		// find the index of closet nap time to the appointment
+
+		let closestIndex = -1;
+		let minDiff = Infinity;
+
+		naps.forEach((nap, index) => {
+			const napMinutes = toMinutes(nap);
+			const diff = Math.abs(napMinutes - appointmentMinutes);
+
+			if (diff < minDiff) {
+				minDiff = diff;
+				closestIndex = index;
+			}
+
+			console.log(closestIndex, "closestIndex");
+		});
+
+		console.log(closestIndex, "closestIndex");
+		// Create the new nap schedule with conflict
+		const newNaps = [...naps];
+		const suggestFirstNewNap = parseTimeToDaysjs(
+			toMinutes(naps[closestIndex]) - 60
+		);
+		console.log(suggestFirstNewNap, "suggestNewNap");
+
+		let timeAddedToNap = conflictTimeDuration * 60 + 60;
+		const suggestSecondNewNap = parseTimeToDaysjs(
+			toMinutes(naps[closestIndex]) + timeAddedToNap
+		);
+
+		console.log(suggestSecondNewNap, "suggestSecondNewNap");
+
+		newNaps[closestIndex] = `SKIP Nap or Earlier Nap at ${suggestFirstNewNap}`;
+		newNaps.splice(closestIndex + 1, 0, `Next Nap at ${suggestSecondNewNap}`);
+		newNaps[closestIndex + 1] = `Later Nap at ${suggestSecondNewNap}`;
+
+		newNaps.push("Suggested Early Bedtime: or Suggested Late Bedtime: ");
+
+		console.log(newNaps);
+		return newNaps;
+	};
+	//JSX
 	return (
 		<>
-			<h1>Personalized Nap Schedule</h1>
+			<h1> Nap Schedule Example</h1>
 			<div>
 				<NapContainer>
 					<table>
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>Start</th>
-								<th>End</th>
+								<th>Start Window</th>
+								<th>End Window</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -83,18 +166,52 @@ export default function PersonalNapSchedule({
 									<td>
 										<NapItem>{newEndOfNapTimes[index]}</NapItem>
 									</td>
+									<td></td>
 								</tr>
 							))}
 						</tbody>
 					</table>
 				</NapContainer>
-				<button> Nap time conflict – Click to Adjust </button>
-				<br />
 				<button> Edit</button>
 				<br />
 				<button> Save</button>
 			</div>
 			<hr />
+			<form>
+				<h1>Nap Time Conflict Details</h1>
+				<label>
+					Appointment Start Time:
+					<input
+						name="conflictTime"
+						type="time"
+						value={conflictStartTime}
+						onChange={(e) => setConflictTime(e.target.value)}
+					/>
+				</label>
+				<br />
+				<label>
+					Appointment Duration:
+					<input
+						name="conflictDuration"
+						type="number"
+						value={conflictTimeDuration}
+						onChange={(e) => setConflictDuration(e.target.value)}
+					/>{" "}
+					hr
+				</label>
+				<br />
+				<button
+					onClick={(e) => {
+						e.preventDefault();
+						handleRecalculate(napTimes, conflictStartTime);
+					}}>
+					{" "}
+					Recalculate Nap Schedule
+				</button>
+				<br />
+
+				<hr />
+			</form>
 		</>
 	);
 }
