@@ -18,13 +18,26 @@ export default function Summary({ napTimes, endOfNapTimes, bedTime }) {
 		const [hours, minutes] = timeStr.split(":").map(Number);
 		return dayjs().hour(hours).minute(minutes).format(format);
 	}
+	const formatMinutesTo12Hour = (totalMinutes) => {
+		const hours = Math.floor(totalMinutes / 60);
+		const minutes = totalMinutes % 60;
+
+		return dayjs()
+			.hour(hours)
+			.minute(minutes)
+			.second(0)
+			.millisecond(0)
+			.format("h:mm A");
+	};
 
 	const finalNapTimes = napTimes.map((napTime) => formatNapTime(napTime));
 	const newEndOfNapTimes = endOfNapTimes.map((endTime) =>
 		formatNapTime(endTime)
 	);
 
-	const bedTimeFinal = bedTime.formatted;
+	const earlyBedTimeFinal = formatMinutesTo12Hour(bedTime.totalMinutes - 120);
+
+	const laterBedTimeFinal = formatMinutesTo12Hour(bedTime.totalMinutes + 120);
 
 	return (
 		<>
@@ -62,8 +75,14 @@ export default function Summary({ napTimes, endOfNapTimes, bedTime }) {
 			<div>
 				<p>Total Nap Time: {finalNapTimes.length}</p>
 			</div>
-			<p>Early Bedtime Option: {bedTimeFinal}</p>
-			<p>Later Bedtime Option</p>
+			<p>
+				Early Bedtime Option: Skip last nap and move bedtime to{" "}
+				{earlyBedTimeFinal}
+			</p>
+			<p>
+				Later Bedtime Option: Have the last nap #{finalNapTimes.length} and move
+				bedtime to {laterBedTimeFinal}
+			</p>
 		</>
 	);
 }

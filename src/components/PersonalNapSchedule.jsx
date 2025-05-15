@@ -45,7 +45,7 @@ export default function PersonalNapSchedule({
 	const newEndOfNapTimes = endOfNapTimes.map(formatTimeString);
 
 	//Conflict Times
-	const [conflictStartTime, setConflictStartTime] = useState("00:00");
+	const [conflictStartTime, setConflictStartTime] = useState("12:00");
 	const [conflictTimeDuration, setConflictTimeDuration] = useState(0);
 
 	const setConflictTime = (data) => {
