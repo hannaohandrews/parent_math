@@ -80,7 +80,7 @@ export default function Summary({ napTimes, endOfNapTimes, bedTime }) {
 				{earlyBedTimeFinal}
 			</p>
 			<p>
-				Later Bedtime Option: Have the last nap #{finalNapTimes.length} and move
+				Later Bedtime Option: Have all {finalNapTimes.length} Naps and move
 				bedtime to {laterBedTimeFinal}
 			</p>
 		</>
