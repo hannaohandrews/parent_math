@@ -22,11 +22,12 @@ export default function BabySchedule({
 	onCalculateNap,
 	onCalculateEndOfNap,
 	onBedTimeChange,
+	onAwakeWindow,
+	onNapDuration,
 }) {
 	const [wakeUpTime, setWakeUpTime] = useState("07:00");
 	const [localBedTime, setlocalBedTime] = useState("19:00");
 
-	const [awakeWindow, setAwakeWindow] = useState(0);
 	const [awakeHour, setAwakeHour] = useState(0);
 	const [awakeMin, setAwakeMin] = useState(0);
 
@@ -36,54 +37,52 @@ export default function BabySchedule({
 	const [napTimes, setNapTimes] = useState([]);
 	const [napEndTimes, setNapEndTimes] = useState([]);
 
-	const calculateNap = (startTime, awakeWindow, napDuration) => {
-		const [hours, minutes] = startTime.split(":");
-		const startTimeParsed = dayjs()
-			.hour(parseInt(hours, 10))
-			.minute(parseInt(minutes, 10))
-			.second(0);
+	const calculateNap = useCallback(
+		(startTime, awakeWindow, napDuration) => {
+			const [hours, minutes] = startTime.split(":");
+			const startTimeParsed = dayjs()
+				.hour(parseInt(hours, 10))
+				.minute(parseInt(minutes, 10))
+				.second(0);
 
-		const awakeWindowDurationInHours = dayjs.duration(awakeWindow, "hours");
-		const napDurationInHours = dayjs.duration(napDuration, "hours");
+			const awakeWindowDurationInHours = dayjs.duration(awakeWindow, "hours");
+			const napDurationInHours = dayjs.duration(napDuration, "hours");
 
-		const napTime = startTimeParsed
-			.add(awakeWindowDurationInHours)
-			.add(napDurationInHours);
+			onAwakeWindow(awakeWindow);
+			onNapDuration(napDuration);
 
-		return napTime.format("HH:mm ");
+			const napTime = startTimeParsed
+				.add(awakeWindowDurationInHours)
+				.add(napDurationInHours);
+
+			return napTime.format("HH:mm ");
+		},
+		[onAwakeWindow, onNapDuration]
+	);
+
+	const parseTime = (timeStr) => {
+		const [hours, minutes] = timeStr.split(":").map(Number);
+		return dayjs().hour(hours).minute(minutes).second(0);
 	};
 
 	const calculateFirstNap = (startTime, awakeWindow) => {
-		const [hours, minutes] = startTime.split(":");
-		const startTimeParsed = dayjs()
-			.hour(parseInt(hours, 10))
-			.minute(parseInt(minutes, 10))
-			.second(0);
-
-		const awakeWindowDurationInHours = dayjs.duration(awakeWindow, "hours");
-
-		const napTime = startTimeParsed.add(awakeWindowDurationInHours);
-
-		return napTime.format("HH:mm ");
+		const startTimeParsed = parseTime(startTime);
+		const napTime = startTimeParsed.add(dayjs.duration(awakeWindow, "hours"));
+		return napTime.format("HH:mm");
 	};
 
 	const calculateEndOfNap = (napTime, napDuration) => {
-		const [hours, minutes] = napTime.split(":");
-		const startTimeParsed = dayjs()
-			.hour(parseInt(hours, 10))
-			.minute(parseInt(minutes, 10))
-			.second(0);
-
-		const napDurationInHours = dayjs.duration(napDuration, "hours");
-
-		const endOfNapTime = startTimeParsed.add(napDurationInHours);
-
-		return endOfNapTime.format("HH:mm ");
+		const startTimeParsed = parseTime(napTime);
+		const endOfNapTime = startTimeParsed.add(
+			dayjs.duration(napDuration, "hours")
+		);
+		return endOfNapTime.format("HH:mm");
 	};
 
-	const handleCalculate = useCallback(
+	const handleCalculateNapSchedule = useCallback(
 		(e) => {
 			e.preventDefault();
+
 			const awakeMinInHours = parseFloat(awakeMin / 60).toPrecision(3);
 			const windowInHours = Number(awakeHour) + Number(awakeMinInHours);
 
@@ -115,13 +114,14 @@ export default function BabySchedule({
 			onCalculateNap(calculatedNapTimes);
 		},
 		[
-			awakeMin,
-			awakeHour,
 			wakeUpTime,
-			onCalculateEndOfNap,
-			onCalculateNap,
-			numberOfNaps,
+			awakeHour,
+			awakeMin,
 			napDuration,
+			numberOfNaps,
+			onCalculateNap,
+			onCalculateEndOfNap,
+			calculateNap,
 		]
 	);
 
@@ -202,7 +202,7 @@ export default function BabySchedule({
 					/>
 				</label>
 				<br />
-				<Button type="button" onClick={handleCalculate}>
+				<Button type="button" onClick={handleCalculateNapSchedule}>
 					Calculate Nap Schedule
 				</Button>
 				<hr />
@@ -215,4 +215,6 @@ BabySchedule.propTypes = {
 	onCalculateNap: PropTypes.func.isRequired,
 	onCalculateEndOfNap: PropTypes.func.isRequired,
 	onBedTimeChange: PropTypes.func.isRequired,
+	onAwakeWindow: PropTypes.func.isRequired,
+	onNapDuration: PropTypes.func.isRequired,
 };

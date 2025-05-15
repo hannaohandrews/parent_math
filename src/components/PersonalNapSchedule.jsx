@@ -18,9 +18,11 @@ export default function PersonalNapSchedule({
 	napTimes,
 	bedTime,
 	endOfNapTimes,
+	awakeWindow,
+	onNewNapTimes,
+	napDuration,
 }) {
-	// Function parseTimeToDayjs
-
+	// Function parse Minutes to Hours
 	function parseTimeToDaysjs(totalMinutes) {
 		const hours = Math.floor(totalMinutes / 60);
 		const minutes = totalMinutes % 60;
@@ -30,48 +32,17 @@ export default function PersonalNapSchedule({
 			.second(0)
 			.millisecond(0);
 
-		return finalTime.format("hh:mm A");
+		return finalTime.format("HH:mm");
 	}
 
-	// bedTime
-	const [hours, minutes] = bedTime.split(":");
-	const bedTimeParsed = dayjs()
-		.hour(parseInt(hours, 10))
-		.minute(parseInt(minutes, 10));
-	const bedTimeLocal = bedTimeParsed.format("hh:mm A");
-
 	//napTime
-	const newNapTimes = napTimes.map((napTime) => {
-		const [napTimeHours, napTimeMinutes] = napTime.split(":");
+	const formatTimeString = (timeStr) => {
+		const [hours, minutes] = timeStr.split(":").map(Number);
+		return dayjs().hour(hours).minute(minutes).format("h:mm A");
+	};
 
-		const napTimeParsed = dayjs()
-			.hour(parseInt(napTimeHours, 10))
-			.minute(parseInt(napTimeMinutes, 10));
-
-		return napTimeParsed.format("h:mm A");
-	});
-
-	const newEndOfNapTimes = endOfNapTimes.map((endOfNapTime) => {
-		const [endNapTimeHours, endNapTimeMinutes] = endOfNapTime.split(":");
-
-		const endNapTimeParsed = dayjs()
-			.hour(parseInt(endNapTimeHours, 10))
-			.minute(parseInt(endNapTimeMinutes, 10));
-
-		return endNapTimeParsed.format("h:mm A");
-	});
-
-	//lastNapEnding
-	const lastNap = endOfNapTimes[endOfNapTimes.length - 1];
-	const [lastNapHours, lastNapMinutes] = lastNap.split(":");
-
-	const lastNapParsed = dayjs()
-		.hour(parseInt(lastNapHours, 10))
-		.minute(parseInt(lastNapMinutes, 10));
-
-	const timeDifferenceInMS = bedTimeParsed.diff(lastNapParsed);
-	const timeDifferenceDuration = dayjs.duration(timeDifferenceInMS);
-	const timeDifferenceInHours = Math.floor(timeDifferenceDuration.asHours());
+	const newNapTimes = napTimes.map(formatTimeString);
+	const newEndOfNapTimes = endOfNapTimes.map(formatTimeString);
 
 	//Conflict Times
 	const [conflictStartTime, setConflictStartTime] = useState("00:00");
@@ -85,19 +56,15 @@ export default function PersonalNapSchedule({
 		setConflictTimeDuration(data);
 	};
 
-	console.log(conflictStartTime);
-	console.log(conflictTimeDuration);
-
 	// Recalculate New sleeping times
 	const handleRecalculate = (naps, appointmentTime) => {
-		console.log("naps", naps);
 		function toMinutes(timeStr) {
 			const [hours, minutes] = timeStr.split(":").map(Number);
 			return hours * 60 + minutes;
 		}
 
 		const appointmentMinutes = toMinutes(appointmentTime);
-		console.log(appointmentMinutes, "appointmentMinutes");
+
 		// find the index of closet nap time to the appointment
 
 		let closestIndex = -1;
@@ -111,33 +78,35 @@ export default function PersonalNapSchedule({
 				minDiff = diff;
 				closestIndex = index;
 			}
-
-			console.log(closestIndex, "closestIndex");
 		});
 
-		console.log(closestIndex, "closestIndex");
 		// Create the new nap schedule with conflict
-		const newNaps = [...naps];
+		const newNapsFinal = [...naps];
 		const suggestFirstNewNap = parseTimeToDaysjs(
-			toMinutes(naps[closestIndex]) - 60
+			toMinutes(naps[closestIndex]) - 90
 		);
-		console.log(suggestFirstNewNap, "suggestNewNap");
 
-		let timeAddedToNap = conflictTimeDuration * 60 + 60;
+		// Constants
+		const timeAddedToNap = conflictTimeDuration * 60 + 60;
 		const suggestSecondNewNap = parseTimeToDaysjs(
 			toMinutes(naps[closestIndex]) + timeAddedToNap
 		);
+		const suggestThirdNewNap = parseTimeToDaysjs(
+			toMinutes(naps[closestIndex]) +
+				timeAddedToNap +
+				awakeWindow * 60 +
+				napDuration * 60
+		);
 
-		console.log(suggestSecondNewNap, "suggestSecondNewNap");
+		//
+		newNapsFinal[closestIndex] = suggestFirstNewNap;
+		newNapsFinal[closestIndex + 1] = suggestSecondNewNap;
+		newNapsFinal[closestIndex + 2] = suggestThirdNewNap;
 
-		newNaps[closestIndex] = `SKIP Nap or Earlier Nap at ${suggestFirstNewNap}`;
-		newNaps.splice(closestIndex + 1, 0, `Next Nap at ${suggestSecondNewNap}`);
-		newNaps[closestIndex + 1] = `Later Nap at ${suggestSecondNewNap}`;
+		console.log("NEW NAPS", newNapsFinal);
 
-		newNaps.push("Suggested Early Bedtime: or Suggested Late Bedtime: ");
-
-		console.log(newNaps);
-		return newNaps;
+		onNewNapTimes(newNapsFinal);
+		return newNapsFinal;
 	};
 	//JSX
 	return (
@@ -217,7 +186,10 @@ export default function PersonalNapSchedule({
 }
 
 PersonalNapSchedule.propTypes = {
+	onNewNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
 	napTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
-	bedTime: PropTypes.string.isRequired,
+	bedTime: PropTypes.object.isRequired,
 	endOfNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
+	awakeWindow: PropTypes.number.isRequired,
+	napDuration: PropTypes.number.isRequired,
 };

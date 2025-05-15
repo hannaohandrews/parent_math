@@ -1,13 +1,35 @@
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import BabyInfo from "./components/BabyInfo";
 import Recommendations from "./components/Recommendations";
 import PersonalNapSchedule from "./components/PersonalNapSchedule";
 import BabySchedule from "./components/BabySchedule";
 import Summary from "./components/Summary";
+import dayjs from "dayjs";
+
+const bedTimeReducer = (state, action) => {
+	switch (action.type) {
+		case "SET_BEDTIME": {
+			const { timeStr } = action.payload;
+			const [hours, minutes] = timeStr.split(":").map(Number);
+			const totalMinutes = hours * 60 + minutes;
+			const formatted = dayjs().hour(hours).minute(minutes).format("h:mm A");
+
+			return {
+				time: timeStr,
+				totalMinutes,
+				formatted,
+			};
+		}
+		default:
+			return state;
+	}
+};
 
 function App() {
 	const [ageInMonths, setAgeInMonths] = useState(0);
 	const [name, setName] = useState("");
+	const [awakeWindow, setAwakeWindow] = useState(0);
+	const [napDuration, setNapDuration] = useState(0);
 
 	const [napTimes, setNapTimes] = useState([
 		"00:00",
@@ -22,7 +44,17 @@ function App() {
 		"00:00",
 		"00:00",
 	]);
-	const [bedTime, setBedTime] = useState("00:00");
+
+	const [newNapTimes, setNewNapTimes] = useState([]);
+	const [newEndOfNapTimes, setNewEndOfNapTimes] = useState([]);
+
+	const updateNewNapTimes = (newNapTimes) => {
+		setNewNapTimes(newNapTimes);
+	};
+
+	const updateAwakeWindow = (awakeWindowNumber) => {
+		setAwakeWindow(awakeWindowNumber);
+	};
 
 	const updateBabyAge = (age, name) => {
 		setAgeInMonths(age);
@@ -33,36 +65,54 @@ function App() {
 		setNapTimes(napTimesArray);
 	};
 
-	const updateBedTime = (bedTime) => {
-		setBedTime(bedTime);
-	};
-
 	const updateEndOfNapTimes = (endOfNapTimesArray) => {
 		setEndOfNapTimes(endOfNapTimesArray);
 	};
+
+	const [bedTime, dispatchBedTime] = useReducer(bedTimeReducer, {
+		time: "19:00",
+		totalMinutes: 1140,
+		formatted: "7:00 PM",
+	});
+
+	const updateBedTime = (timeStr) => {
+		dispatchBedTime({ type: "SET_BEDTIME", payload: { timeStr } });
+	};
+
+	const updateNapDuration = (num) => {
+		setNapDuration(num);
+	};
+
+	const finalNapTimes = newNapTimes?.some((time) => time !== "00:00")
+		? newNapTimes
+		: napTimes;
+
+	console.log(newNapTimes, "newNapTimes");
 
 	return (
 		<>
 			<h1>Welcome to Nap Calculator</h1>
 			<BabyInfo onUpdate={updateBabyAge} />
 			<Recommendations ageInMonths={ageInMonths} name={name} />
+
 			<BabySchedule
 				onCalculateNap={updateNaps}
 				onCalculateEndOfNap={updateEndOfNapTimes}
 				onBedTimeChange={updateBedTime}
+				onAwakeWindow={updateAwakeWindow}
+				onNapDuration={updateNapDuration}
 			/>
 
 			<PersonalNapSchedule
 				napTimes={napTimes}
 				bedTime={bedTime}
+				napDuration={napDuration}
 				endOfNapTimes={endOfNapTimes}
+				awakeWindow={awakeWindow}
+				onNewNapTimes={updateNewNapTimes}
 			/>
 
-			<Summary
-				napTimes={napTimes}
-				bedTime={bedTime}
-				endOfNapTimes={endOfNapTimes}
-			/>
+			<Summary napTimes={finalNapTimes} endOfNapTimes={endOfNapTimes} />
 		</>
 	);
 }
