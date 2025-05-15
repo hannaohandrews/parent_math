@@ -32,5 +32,4 @@ export default function Recommendations(props) {
 
 Recommendations.propTypes = {
 	ageInMonths: PropTypes.number.isRequired,
-	name: PropTypes.string.isRequired,
 };

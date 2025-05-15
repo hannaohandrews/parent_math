@@ -113,7 +113,6 @@ function App() {
 
 			<PersonalNapSchedule
 				napTimes={napTimes}
-				bedTime={bedTime}
 				napDuration={napDuration}
 				endOfNapTimes={endOfNapTimes}
 				awakeWindow={awakeWindow}
@@ -121,7 +120,11 @@ function App() {
 				onNewEndNapTimes={updateNewEndNapTimes}
 			/>
 
-			<Summary napTimes={finalNapTimes} endOfNapTimes={finalEndNapTimes} />
+			<Summary
+				napTimes={finalNapTimes}
+				endOfNapTimes={finalEndNapTimes}
+				bedTime={bedTime}
+			/>
 		</>
 	);
 }

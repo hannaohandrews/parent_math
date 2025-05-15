@@ -16,7 +16,6 @@ const NapItem = styled.div`
 
 export default function PersonalNapSchedule({
 	napTimes,
-	bedTime,
 	endOfNapTimes,
 	awakeWindow,
 	onNewNapTimes,
@@ -63,11 +62,9 @@ export default function PersonalNapSchedule({
 			const [hours, minutes] = timeStr.split(":").map(Number);
 			return hours * 60 + minutes;
 		}
-
 		const appointmentMinutes = toMinutes(appointmentTime);
 
 		// find the index of closet nap time to the appointment
-
 		let closestIndex = -1;
 		let minDiff = Infinity;
 
@@ -147,9 +144,6 @@ export default function PersonalNapSchedule({
 						</tbody>
 					</table>
 				</NapContainer>
-				<button> Edit</button>
-				<br />
-				<button> Save</button>
 			</div>
 			<hr />
 			<form>
@@ -192,10 +186,10 @@ export default function PersonalNapSchedule({
 }
 
 PersonalNapSchedule.propTypes = {
-	onNewNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
-	napTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
-	bedTime: PropTypes.object.isRequired,
-	endOfNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
 	awakeWindow: PropTypes.number.isRequired,
+	endOfNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
+	napTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
 	napDuration: PropTypes.number.isRequired,
+	onNewNapTimes: PropTypes.func,
+	onNewEndNapTimes: PropTypes.func,
 };

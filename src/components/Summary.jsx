@@ -13,7 +13,7 @@ const NapItem = styled.div`
 	padding: 10px;
 `;
 
-export default function Summary({ napTimes, endOfNapTimes }) {
+export default function Summary({ napTimes, endOfNapTimes, bedTime }) {
 	function formatNapTime(timeStr, format = "h:mm A") {
 		const [hours, minutes] = timeStr.split(":").map(Number);
 		return dayjs().hour(hours).minute(minutes).format(format);
@@ -23,6 +23,8 @@ export default function Summary({ napTimes, endOfNapTimes }) {
 	const newEndOfNapTimes = endOfNapTimes.map((endTime) =>
 		formatNapTime(endTime)
 	);
+
+	const bedTimeFinal = bedTime.formatted;
 
 	return (
 		<>
@@ -54,14 +56,13 @@ export default function Summary({ napTimes, endOfNapTimes }) {
 						</tbody>
 					</table>
 				</NapContainer>
-				<button>EDIT </button>
 			</div>
-
+			<hr />
 			<h2>Summary</h2>
 			<div>
 				<p>Total Nap Time: {finalNapTimes.length}</p>
 			</div>
-			<p>Early Bedtime Option</p>
+			<p>Early Bedtime Option: {bedTimeFinal}</p>
 			<p>Later Bedtime Option</p>
 		</>
 	);
@@ -70,4 +71,5 @@ export default function Summary({ napTimes, endOfNapTimes }) {
 Summary.propTypes = {
 	napTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
 	endOfNapTimes: PropTypes.arrayOf(PropTypes.string).isRequired,
+	bedTime: PropTypes.object.isRequired,
 };
