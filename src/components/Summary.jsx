@@ -61,8 +61,8 @@ export default function Summary({ napTimes, endOfNapTimes }) {
 			<div>
 				<p>Total Nap Time: {finalNapTimes.length}</p>
 			</div>
-			<button>Early Bedtime Option</button>
-			<button>Later Bedtime Option</button>
+			<p>Early Bedtime Option</p>
+			<p>Later Bedtime Option</p>
 		</>
 	);
 }

@@ -14,7 +14,6 @@ const Button = styled.button`
 	}
 `;
 export default function BabyInfo({ onUpdate }) {
-	const [name, setName] = useState("");
 	const [birthdate, setBirthdate] = useState(new Date());
 
 	const calculateAge = (event) => {
@@ -34,15 +33,6 @@ export default function BabyInfo({ onUpdate }) {
 		<>
 			<h1>Baby Info</h1>
 			<form>
-				<label>
-					Name:
-					<input
-						name="name"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-					/>
-				</label>
-				<br />
 				<label>
 					Date of Birth:
 					<input

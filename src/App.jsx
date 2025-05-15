@@ -45,11 +45,25 @@ function App() {
 		"00:00",
 	]);
 
+	const [bedTime, dispatchBedTime] = useReducer(bedTimeReducer, {
+		time: "19:00",
+		totalMinutes: 1140,
+		formatted: "7:00 PM",
+	});
+
 	const [newNapTimes, setNewNapTimes] = useState([]);
 	const [newEndOfNapTimes, setNewEndOfNapTimes] = useState([]);
 
+	const updateBedTime = (timeStr) => {
+		dispatchBedTime({ type: "SET_BEDTIME", payload: { timeStr } });
+	};
+
 	const updateNewNapTimes = (newNapTimes) => {
 		setNewNapTimes(newNapTimes);
+	};
+
+	const updateNewEndNapTimes = (newEnd) => {
+		setNewEndOfNapTimes(newEnd);
 	};
 
 	const updateAwakeWindow = (awakeWindowNumber) => {
@@ -69,16 +83,6 @@ function App() {
 		setEndOfNapTimes(endOfNapTimesArray);
 	};
 
-	const [bedTime, dispatchBedTime] = useReducer(bedTimeReducer, {
-		time: "19:00",
-		totalMinutes: 1140,
-		formatted: "7:00 PM",
-	});
-
-	const updateBedTime = (timeStr) => {
-		dispatchBedTime({ type: "SET_BEDTIME", payload: { timeStr } });
-	};
-
 	const updateNapDuration = (num) => {
 		setNapDuration(num);
 	};
@@ -87,13 +91,17 @@ function App() {
 		? newNapTimes
 		: napTimes;
 
-	console.log(newNapTimes, "newNapTimes");
+	const finalEndNapTimes = newEndOfNapTimes?.some((time) => time !== "00:00")
+		? newEndOfNapTimes
+		: endOfNapTimes;
+
+	console.log(finalEndNapTimes, "finalEndNapTimes");
 
 	return (
 		<>
 			<h1>Welcome to Nap Calculator</h1>
 			<BabyInfo onUpdate={updateBabyAge} />
-			<Recommendations ageInMonths={ageInMonths} name={name} />
+			<Recommendations ageInMonths={ageInMonths} />
 
 			<BabySchedule
 				onCalculateNap={updateNaps}
@@ -110,9 +118,10 @@ function App() {
 				endOfNapTimes={endOfNapTimes}
 				awakeWindow={awakeWindow}
 				onNewNapTimes={updateNewNapTimes}
+				onNewEndNapTimes={updateNewEndNapTimes}
 			/>
 
-			<Summary napTimes={finalNapTimes} endOfNapTimes={endOfNapTimes} />
+			<Summary napTimes={finalNapTimes} endOfNapTimes={finalEndNapTimes} />
 		</>
 	);
 }

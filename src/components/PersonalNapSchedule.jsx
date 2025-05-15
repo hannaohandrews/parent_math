@@ -21,6 +21,7 @@ export default function PersonalNapSchedule({
 	awakeWindow,
 	onNewNapTimes,
 	napDuration,
+	onNewEndNapTimes,
 }) {
 	// Function parse Minutes to Hours
 	function parseTimeToDaysjs(totalMinutes) {
@@ -86,7 +87,7 @@ export default function PersonalNapSchedule({
 			toMinutes(naps[closestIndex]) - 90
 		);
 
-		// Constants
+		// Final Nap calculation
 		const timeAddedToNap = conflictTimeDuration * 60 + 60;
 		const suggestSecondNewNap = parseTimeToDaysjs(
 			toMinutes(naps[closestIndex]) + timeAddedToNap
@@ -105,7 +106,12 @@ export default function PersonalNapSchedule({
 
 		console.log("NEW NAPS", newNapsFinal);
 
+		const newNapsEndTimesFinal = newNapsFinal.map((nap) => {
+			return parseTimeToDaysjs(toMinutes(nap) + napDuration * 60);
+		});
+
 		onNewNapTimes(newNapsFinal);
+		onNewEndNapTimes(newNapsEndTimesFinal);
 		return newNapsFinal;
 	};
 	//JSX

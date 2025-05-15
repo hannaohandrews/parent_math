@@ -1,13 +1,8 @@
 import PropTypes from "prop-types";
 import NapScheduleData from "./NapScheduleData";
-import styled from "styled-components";
-
-const Name = styled.h2`
-	color: ${(props) => (props.name ? "blue" : "black")};
-`;
 
 export default function Recommendations(props) {
-	const { ageInMonths, name } = props;
+	const { ageInMonths } = props;
 
 	const napSchedule = NapScheduleData.find((data) =>
 		data.age.includes(ageInMonths)
@@ -23,7 +18,6 @@ export default function Recommendations(props) {
 		<>
 			<h1>Recommendations </h1>
 			<div>
-				<Name name={name}>Name: {name}</Name>
 				<h2>Age of Baby: {ageInMonths} Months </h2>
 			</div>
 			<ul>
