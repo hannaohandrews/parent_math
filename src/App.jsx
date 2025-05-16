@@ -27,7 +27,6 @@ const bedTimeReducer = (state, action) => {
 
 function App() {
 	const [ageInMonths, setAgeInMonths] = useState(0);
-	const [name, setName] = useState("");
 	const [awakeWindow, setAwakeWindow] = useState(0);
 	const [napDuration, setNapDuration] = useState(0);
 
@@ -70,9 +69,8 @@ function App() {
 		setAwakeWindow(awakeWindowNumber);
 	};
 
-	const updateBabyAge = (age, name) => {
+	const updateBabyAge = (age) => {
 		setAgeInMonths(age);
-		setName(name);
 	};
 
 	const updateNaps = (napTimesArray) => {
