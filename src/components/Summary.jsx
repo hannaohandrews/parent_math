@@ -35,9 +35,9 @@ export default function Summary({ napTimes, endOfNapTimes, bedTime }) {
 		formatNapTime(endTime)
 	);
 
-	const earlyBedTimeFinal = formatMinutesTo12Hour(bedTime.totalMinutes - 120);
+	const earlyBedTimeFinal = formatMinutesTo12Hour(bedTime.totalMinutes - 60);
 
-	const laterBedTimeFinal = formatMinutesTo12Hour(bedTime.totalMinutes + 120);
+	const laterBedTimeFinal = formatMinutesTo12Hour(bedTime.totalMinutes + 60);
 
 	return (
 		<>

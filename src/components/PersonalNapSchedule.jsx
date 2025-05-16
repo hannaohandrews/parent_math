@@ -21,7 +21,9 @@ export default function PersonalNapSchedule({
 	onNewNapTimes,
 	napDuration,
 	onNewEndNapTimes,
+	napNumber,
 }) {
+	console.log("Nap Number in PersonalNap", napNumber);
 	// Function parse Minutes to Hours
 	function parseTimeToDaysjs(totalMinutes) {
 		const hours = Math.floor(totalMinutes / 60);
@@ -107,8 +109,8 @@ export default function PersonalNapSchedule({
 			return parseTimeToDaysjs(toMinutes(nap) + napDuration * 60);
 		});
 
-		onNewNapTimes(newNapsFinal);
-		onNewEndNapTimes(newNapsEndTimesFinal);
+		onNewNapTimes(newNapsFinal.slice(0, napNumber + 1));
+		onNewEndNapTimes(newNapsEndTimesFinal.slice(0, napNumber + 1));
 		return newNapsFinal;
 	};
 	//JSX
@@ -121,8 +123,8 @@ export default function PersonalNapSchedule({
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>Start Window</th>
-								<th>End Window</th>
+								<th>Start</th>
+								<th>End</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -192,4 +194,5 @@ PersonalNapSchedule.propTypes = {
 	napDuration: PropTypes.number.isRequired,
 	onNewNapTimes: PropTypes.func,
 	onNewEndNapTimes: PropTypes.func,
+	napNumber: PropTypes.number,
 };

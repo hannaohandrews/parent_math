@@ -52,6 +52,7 @@ function App() {
 
 	const [newNapTimes, setNewNapTimes] = useState([]);
 	const [newEndOfNapTimes, setNewEndOfNapTimes] = useState([]);
+	const [napNumber, setNapNumber] = useState(0);
 
 	const updateBedTime = (timeStr) => {
 		dispatchBedTime({ type: "SET_BEDTIME", payload: { timeStr } });
@@ -85,6 +86,10 @@ function App() {
 		setNapDuration(num);
 	};
 
+	const updateNapNumber = (num) => {
+		setNapNumber(num);
+	};
+
 	const finalNapTimes = newNapTimes?.some((time) => time !== "00:00")
 		? newNapTimes
 		: napTimes;
@@ -107,6 +112,7 @@ function App() {
 				onBedTimeChange={updateBedTime}
 				onAwakeWindow={updateAwakeWindow}
 				onNapDuration={updateNapDuration}
+				onNumberOfNaps={updateNapNumber}
 			/>
 
 			<PersonalNapSchedule
@@ -114,6 +120,7 @@ function App() {
 				napDuration={napDuration}
 				endOfNapTimes={endOfNapTimes}
 				awakeWindow={awakeWindow}
+				napNumber={napNumber}
 				onNewNapTimes={updateNewNapTimes}
 				onNewEndNapTimes={updateNewEndNapTimes}
 			/>

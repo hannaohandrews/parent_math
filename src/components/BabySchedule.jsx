@@ -24,6 +24,7 @@ export default function BabySchedule({
 	onBedTimeChange,
 	onAwakeWindow,
 	onNapDuration,
+	onNumberOfNaps,
 }) {
 	const [wakeUpTime, setWakeUpTime] = useState("07:00");
 	const [localBedTime, setLocalBedTime] = useState("19:00");
@@ -59,6 +60,7 @@ export default function BabySchedule({
 
 			onAwakeWindow(awakeWindow);
 			onNapDuration(totalNapDurationInHours);
+			onNumberOfNaps(numberOfNaps);
 
 			const napTime = startTimeParsed
 				.add(awakeWindowDurationInHours)
@@ -66,7 +68,7 @@ export default function BabySchedule({
 
 			return napTime.format("HH:mm ");
 		},
-		[onAwakeWindow, onNapDuration]
+		[onAwakeWindow, onNapDuration, numberOfNaps]
 	);
 
 	const parseTime = (timeStr) => {
@@ -256,4 +258,5 @@ BabySchedule.propTypes = {
 	onBedTimeChange: PropTypes.func.isRequired,
 	onAwakeWindow: PropTypes.func.isRequired,
 	onNapDuration: PropTypes.func.isRequired,
+	onNumberOfNaps: PropTypes.func.isRequired,
 };
